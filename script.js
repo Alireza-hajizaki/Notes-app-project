@@ -24,32 +24,67 @@ addBox.addEventListener("click", () => {
   popupBox.classList.add("show");
 });
 
-
 //closeing modal
-
 popupClose.addEventListener("click", closeModal);
 
-function closeModal(){
-    popupBox.classList.remove("show");
+function closeModal() {
+  popupBox.classList.remove("show");
 }
 
 buttonElem.addEventListener("click", () => {
   const newNote = {
     title: inputElem.value,
     description: textareaElem.value,
-    date: "april 2023 12",
+    date: getNowDate(),
   };
 
   notes.push(newNote);
   setNotesInLocalStorage(notes);
-  closeModal()
-  generateNotes(notes)
+  closeModal();
+  generateNotes(notes);
   clearInputs();
 });
 
+function getNowDate() {
+  let now = new Date();
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
+  let newDay = now.getDay();
+  let newMonth = now.getMonth();
+  let newYear = now.getFullYear();
+  let datOfMonth = now.getDate();
+
+  return`${months[newMonth]} ${datOfMonth}, ${newYear} (${days[newDay]})`
+}
+
+
 function clearInputs() {
-    inputElem.value = ''
-    textareaElem.value = ''
+  inputElem.value = "";
+  textareaElem.value = "";
 }
 
 function getLocalStorageNotes() {
@@ -65,9 +100,8 @@ function getLocalStorageNotes() {
 }
 
 function generateNotes(notes) {
-
-    //delet all note in dom
-    $.querySelectorAll('.note').forEach(note => note.remove())
+  //delet all note in dom
+  $.querySelectorAll(".note").forEach((note) => note.remove());
 
   notes.forEach((note) => {
     wrapperElem.insertAdjacentHTML(
@@ -98,8 +132,8 @@ function generateNotes(notes) {
   });
 }
 
-function showSetting (el){
-    el.parentElement.classList.add('show')
+function showSetting(el) {
+  el.parentElement.classList.add("show");
 }
 
 function setNotesInLocalStorage(notes) {
@@ -111,6 +145,6 @@ window.addEventListener("load", () => {
   generateNotes(notes);
 });
 
-window.addEventListener('keyup' , (e) => {
-  if(e.key==='Escape') closeModal();
-})
+window.addEventListener("keyup", (e) => {
+  if (e.key === "Escape") closeModal();
+});
