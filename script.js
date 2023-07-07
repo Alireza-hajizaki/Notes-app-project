@@ -10,19 +10,23 @@ const addBox = $.querySelector(".add-box"),
 
 let notes = [];
 let isUpdate = false;
+let updatId = null;
 
-addBox.addEventListener("click", () => {
+addBox.addEventListener("click", showModal);
+
+function showModal(noteTitle, noteDesc) {
   if (isUpdate) {
     popupTitle.innerHTML = "Update Note";
     addNoteBtn.innerHTML = "update Note";
+    inputElem.value = noteTitle;
+    textareaElem.value = noteDesc;
   } else {
     popupTitle.innerHTML = "Add a new Note";
     addNoteBtn.innerHTML = "Add Note";
   }
-
   inputElem.focus();
   popupBox.classList.add("show");
-});
+}
 
 //closeing modal
 popupClose.addEventListener("click", closeModal);
@@ -32,17 +36,36 @@ function closeModal() {
 }
 
 addNoteBtn.addEventListener("click", () => {
-  const newNote = {
-    title: inputElem.value,
-    description: textareaElem.value,
-    date: getNowDate(),
-  };
+  if (isUpdate) {
+    let allNotes = getLocalStorageNotes();
 
-  notes.push(newNote);
-  setNotesInLocalStorage(notes);
-  closeModal();
-  generateNotes(notes);
-  clearInputs();
+    allNotes.some((note, index) => {
+      if (index === updatId) {
+        note.title = inputElem.value;
+        note.description = textareaElem.value;
+      }
+    });
+
+    setNotesInLocalStorage(allNotes);
+    generateNotes(allNotes);
+    closeModal();
+    clearInputs();
+
+    isUpdate = false;
+
+  } else {
+    const newNote = {
+      title: inputElem.value,
+      description: textareaElem.value,
+      date: getNowDate(),
+    };
+
+    notes.push(newNote);
+    setNotesInLocalStorage(notes);
+    closeModal();
+    generateNotes(notes);
+    clearInputs();
+  }
 });
 
 function getNowDate() {
@@ -116,7 +139,7 @@ function generateNotes(notes) {
           <div class="settings">
             <i class="uil uil-ellipsis-h" onclick="showSetting(this)"></i>
             <ul class="menu">
-              <li onclick="editNote({index}, '{note.title}', '{note.description}')">
+              <li onclick="editNote(${index}, '${note.title}', '${note.description}')">
                 <i class="uil uil-pen"></i>Edit
               </li>
               <li onclick="removeNote(${index})">
@@ -129,6 +152,12 @@ function generateNotes(notes) {
         `
     );
   });
+}
+
+function editNote(noteId, noteTitle, noteDesc) {
+  isUpdate = true;
+  showModal(noteTitle, noteDesc);
+  updatId = noteId;
 }
 
 function removeNote(noteIndex) {
