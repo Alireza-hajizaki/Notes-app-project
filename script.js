@@ -172,7 +172,15 @@ function removeNote(noteIndex) {
 }
 
 function showSetting(el) {
-  el.parentElement.classList.add("show");
+  el.parentElement.classList.add('show')
+
+  document.addEventListener('click', event => {
+
+      if (event.target.tagName !== 'I' || event.target != el) {
+          el.parentElement.classList.remove('show')
+      }
+      
+  })
 }
 
 function setNotesInLocalStorage(notes) {
