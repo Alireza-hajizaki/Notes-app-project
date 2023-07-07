@@ -5,7 +5,7 @@ const addBox = $.querySelector(".add-box"),
   popupClose = $.querySelector(".colse-modal"),
   inputElem = $.querySelector("input"),
   textareaElem = $.querySelector("textarea"),
-  buttonElem = $.querySelector("button"),
+  addNoteBtn = $.querySelector("button"),
   wrapperElem = $.querySelector(".wrapper");
 
 let notes = [];
@@ -14,10 +14,10 @@ let isUpdate = false;
 addBox.addEventListener("click", () => {
   if (isUpdate) {
     popupTitle.innerHTML = "Update Note";
-    buttonElem.innerHTML = "update Note";
+    addNoteBtn.innerHTML = "update Note";
   } else {
     popupTitle.innerHTML = "Add a new Note";
-    buttonElem.innerHTML = "Add Note";
+    addNoteBtn.innerHTML = "Add Note";
   }
 
   inputElem.focus();
@@ -31,7 +31,7 @@ function closeModal() {
   popupBox.classList.remove("show");
 }
 
-buttonElem.addEventListener("click", () => {
+addNoteBtn.addEventListener("click", () => {
   const newNote = {
     title: inputElem.value,
     description: textareaElem.value,
@@ -78,9 +78,8 @@ function getNowDate() {
   let newYear = now.getFullYear();
   let datOfMonth = now.getDate();
 
-  return`${months[newMonth]} ${datOfMonth}, ${newYear} (${days[newDay]})`
+  return `${months[newMonth]} ${datOfMonth}, ${newYear} (${days[newDay]})`;
 }
-
 
 function clearInputs() {
   inputElem.value = "";
@@ -103,7 +102,7 @@ function generateNotes(notes) {
   //delet all note in dom
   $.querySelectorAll(".note").forEach((note) => note.remove());
 
-  notes.forEach((note) => {
+  notes.forEach((note, index) => {
     wrapperElem.insertAdjacentHTML(
       "beforeend",
       `
@@ -120,7 +119,7 @@ function generateNotes(notes) {
               <li onclick="editNote({index}, '{note.title}', '{note.description}')">
                 <i class="uil uil-pen"></i>Edit
               </li>
-              <li onclick="removeNote({index})">
+              <li onclick="removeNote(${index})">
                 <i class="uil uil-trash"></i>Delete
               </li>
             </ul>
@@ -130,6 +129,17 @@ function generateNotes(notes) {
         `
     );
   });
+}
+
+function removeNote(noteIndex) {
+  let questionDeletNote = confirm("Are you sure to Delete Note !?");
+
+  if (questionDeletNote) {
+    let newNotes = getLocalStorageNotes();
+    newNotes.splice(noteIndex, 1);
+    setNotesInLocalStorage(newNotes);
+    generateNotes(newNotes);
+  }
 }
 
 function showSetting(el) {
